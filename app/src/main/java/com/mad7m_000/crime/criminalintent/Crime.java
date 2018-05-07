@@ -20,7 +20,6 @@ public class Crime {
     }
 
     public UUID getmId() {
-
         return mId;
     }
 

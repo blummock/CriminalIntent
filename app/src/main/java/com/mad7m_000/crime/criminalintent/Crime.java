@@ -15,7 +15,7 @@ public class Crime {
         mDate = new Date();
     }
 
-    public String getmTitle() {
+    public String getTitle() {
         return mTitle;
     }
 

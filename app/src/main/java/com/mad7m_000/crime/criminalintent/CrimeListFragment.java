@@ -16,9 +16,11 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         public TextView mTitleTextView;
         public TextView mDateTexView;
         public ImageView mSolvedImageView;
+        private Crime mCrime;
 
         public CrimeHolder(View itemView) {
             super(itemView);
@@ -27,10 +29,17 @@ public class CrimeListFragment extends Fragment {
             mDateTexView = itemView.findViewById(R.id.crime_date);
             mSolvedImageView = itemView.findViewById(R.id.crime_solved);
         }
+        public void bind(Crime crime) {
+            mCrime = crime;
+            mTitleTextView.setText(mCrime.getTitle());
+            mDateTexView.setText(mCrime.getDate().toString());
+            mSolvedImageView.setVisibility(mCrime.isSolved()? View.VISIBLE : View.GONE);
+        }
+
 
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent(getActivity(), CrimeActivity.class);
+            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getmId());
             startActivity(intent);
         }
     }
@@ -47,11 +56,23 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
     private void updateUI() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
-        mAdapter = new CrimeAdapter(crimes);
-        mCrimeRecyclerView.setAdapter(mAdapter);
+        if (mAdapter == null) {
+
+            mAdapter = new CrimeAdapter(crimes);
+            mCrimeRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
+
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
@@ -71,9 +92,7 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onBindViewHolder(CrimeHolder holder, int position) {
             Crime crime = mCrimes.get(position);
-            holder.mTitleTextView.setText(crime.getTitle());
-            holder.mDateTexView.setText(crime.getDate().toString());
-            holder.mSolvedImageView.setVisibility(crime.isSolved()? View.VISIBLE : View.GONE);
+            holder.bind(crime);
         }
 
         @Override

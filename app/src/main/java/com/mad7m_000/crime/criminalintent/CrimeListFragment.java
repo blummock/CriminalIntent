@@ -11,9 +11,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CrimeListFragment extends Fragment {
+
+    private int choose;
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -21,6 +26,7 @@ public class CrimeListFragment extends Fragment {
         public TextView mDateTexView;
         public ImageView mSolvedImageView;
         private Crime mCrime;
+
 
         public CrimeHolder(View itemView) {
             super(itemView);
@@ -32,7 +38,7 @@ public class CrimeListFragment extends Fragment {
         public void bind(Crime crime) {
             mCrime = crime;
             mTitleTextView.setText(mCrime.getTitle());
-            mDateTexView.setText(mCrime.getDate().toString());
+            mDateTexView.setText(new SimpleDateFormat("EEEE, dd.MM.yyyy HH:mm").format(mCrime.getDate()));
             mSolvedImageView.setVisibility(mCrime.isSolved()? View.VISIBLE : View.GONE);
         }
 
@@ -40,6 +46,7 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View view) {
             Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getmId());
+            choose = getAdapterPosition();
             startActivity(intent);
         }
     }
@@ -66,11 +73,10 @@ public class CrimeListFragment extends Fragment {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
         if (mAdapter == null) {
-
             mAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
-            mAdapter.notifyDataSetChanged();
+            mAdapter.notifyItemChanged();
         }
 
     }
@@ -93,6 +99,11 @@ public class CrimeListFragment extends Fragment {
         public void onBindViewHolder(CrimeHolder holder, int position) {
             Crime crime = mCrimes.get(position);
             holder.bind(crime);
+        }
+
+        public void notifyItemChanged() {
+
+            notifyItemChanged(choose);
         }
 
         @Override

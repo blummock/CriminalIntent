@@ -14,6 +14,8 @@ public class CrimeLab {
 
     private Context mAppContext;
 
+    public static int chooseCrime;
+
     private CrimeLab(Context context) {
         mAppContext = context;
         mCrimes = new ArrayList<>();
